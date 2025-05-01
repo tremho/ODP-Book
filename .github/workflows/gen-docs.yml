@@ -50,7 +50,9 @@ jobs:
         run: echo "TAG_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
       - name: Install GitHub CLI
-        uses: cli/cli-action@v2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh
 
       - name: Create GitHub Release if not exists
         run: |
