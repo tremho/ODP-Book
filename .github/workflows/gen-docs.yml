@@ -58,16 +58,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          gh auth status
-          if ! gh release view "$TAG_NAME" &>/dev/null; then
-            gh release create "$TAG_NAME" -t "$TAG_NAME" -n "Documentation release for $TAG_NAME"
+          if ! gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" &>/dev/null; then
+            gh release create "$TAG_NAME" --repo "$GITHUB_REPOSITORY" \
+              -t "$TAG_NAME" -n "Documentation release for $TAG_NAME"
           fi
 
       - name: Upload zip files to GitHub Release using gh CLI
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          gh release upload "$TAG_NAME" dist/*.zip --clobber
+         gh release upload "$TAG_NAME" dist/*.zip --clobber --repo "$GITHUB_REPOSITORY"
     
   deploy-pages:
     needs: build-docs
