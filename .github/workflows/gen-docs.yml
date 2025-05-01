@@ -54,21 +54,27 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gh
   
+      - name: Authenticate GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          echo "$GH_TOKEN" | gh auth login --with-token
+          gh auth status
+
       - name: Create GitHub Release if not exists
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          gh auth status
           if ! gh release view "$TAG_NAME" &>/dev/null; then
             gh release create "$TAG_NAME" -t "$TAG_NAME" -n "Documentation release for $TAG_NAME"
           fi
-  
+
       - name: Upload zip files to GitHub Release using gh CLI
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           gh release upload "$TAG_NAME" dist/*.zip --clobber
-  
+    
   deploy-pages:
     needs: build-docs
     runs-on: ubuntu-latest
