@@ -56,11 +56,13 @@ jobs:
 
       - name: Set up Git identity
         run: |
+          echo "--- setup Git Identity ---"
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
       - name: Download build artifacts
         run: |
+          echo "--- download build artifacts ---"
           mkdir site
           cp -r target/doc site/rustdoc
           cp -r book site/mdbook
