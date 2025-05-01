@@ -36,6 +36,7 @@ jobs:
           mkdir -p site
           cp -r target/doc site/rustdoc
           cp -r book site/mdbook
+          cp doc-index.html site/index.html
 
       - name: Upload site as artifact
         uses: actions/upload-artifact@v4
