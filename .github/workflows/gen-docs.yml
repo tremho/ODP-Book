@@ -1,0 +1,45 @@
+# .github/workflows/gen-docs.yml
+name: Generate and Upload Docs
+
+on:
+  push:
+    tags:
+      - 'v*'  # Only on version tags (like v1.2.3)
+  workflow_dispatch:
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Generate Cargo Docs
+        run: cargo doc --no-deps --release
+
+      - name: Install mdBook
+        run: cargo install mdbook --version 0.4.36
+
+      - name: Build mdBook
+        run: mdbook build
+
+      - name: Package Cargo Docs
+        run: |
+          mkdir -p dist
+          zip -r dist/cargo-docs.zip target/doc
+
+      - name: Package mdBook Docs
+        run: |
+          zip -r dist/mdbook.zip book
+
+      - name: Upload docs to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/cargo-docs.zip
+            dist/mdbook.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
