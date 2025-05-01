@@ -1,4 +1,4 @@
-# ODP-Book
+# Introduction to ODP
 This project is an introductory guide to Embedded Programming under the Open Device Partnership (ODP) framework.
 
 ## About this material
