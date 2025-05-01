@@ -3,7 +3,7 @@ name: Generate and Publish Docs
 on:
   push:
     tags:
-      - 'v*'  # Only on version tags like v0.1.0
+      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -34,27 +34,38 @@ jobs:
           cp -r target/doc site/rustdoc
           cp -r book site/mdbook
 
-      - name: Upload site directory as artifact (for Pages)
+      - name: Upload site as artifact
         uses: actions/upload-artifact@v4
         with:
           name: site
           path: site
 
-      - name: Create zip archives for Release
+      - name: Create zip archives for release
         run: |
           mkdir dist
           zip -r dist/rustdoc.zip target/doc
           zip -r dist/mdbook.zip book
 
-      - name: Upload zips to GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            dist/rustdoc.zip
-            dist/mdbook.zip
+      - name: Set release tag env var
+        run: echo "TAG_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+      - name: Install GitHub CLI
+        uses: cli/cli-action@v2
+
+      - name: Create GitHub Release if not exists
+        run: |
+          if ! gh release view "$TAG_NAME" &>/dev/null; then
+            gh release create "$TAG_NAME" -t "$TAG_NAME" -n "Documentation release for $TAG_NAME"
+          fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}   # ← use PAT here
-  
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - name: Upload zip files to GitHub Release using gh CLI
+        run: |
+          gh release upload "$TAG_NAME" dist/*.zip --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
   deploy-pages:
     needs: build-docs
     runs-on: ubuntu-latest
@@ -67,7 +78,7 @@ jobs:
 
       - name: Debug site folder contents
         run: |
-          echo "Contents of site/"
+          echo "Contents of site:"
           find site
 
       - name: Publish to GitHub Pages
