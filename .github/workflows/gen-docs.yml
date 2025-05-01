@@ -3,14 +3,15 @@ name: Generate and Publish Docs
 on:
   push:
     tags:
-      - 'v*'  # Run only on version tags like v0.1.0
+      - 'v*'  # Only on version tags like v0.1.0
   workflow_dispatch:
 
 jobs:
   build-docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
@@ -21,25 +22,31 @@ jobs:
       - name: Install mdBook
         run: cargo install mdbook --version 0.4.36
 
-      - name: Build cargo doc
+      - name: Build cargo docs
         run: cargo doc --no-deps --release
 
       - name: Build mdBook
         run: mdbook build
 
-      - name: Prepare site for GitHub Pages
+      - name: Prepare site directory
         run: |
           mkdir -p site
           cp -r target/doc site/rustdoc
           cp -r book site/mdbook
 
-      - name: Create zip archives for GitHub Release
+      - name: Upload site directory as artifact (for Pages)
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site
+
+      - name: Create zip archives for Release
         run: |
           mkdir dist
           zip -r dist/rustdoc.zip target/doc
           zip -r dist/mdbook.zip book
 
-      - name: Upload docs to GitHub Release
+      - name: Upload zips to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
@@ -52,30 +59,11 @@ jobs:
     needs: build-docs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Rebuild docs
-        run: |
-          echo "--- rebuild docs ---" 
-          cargo doc --no-deps --release
-          cargo install mdbook
-          mdbook build
-          mkdir -p site
-          cp -r target/doc site/rustdoc
-          cp -r book site/mdbook 
-
-      - name: Set up Git identity
-        run: |
-          echo "--- setup Git Identity ---" 
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
-      - name: Download build artifacts
-        run: |
-          echo "--- download build artifacts ---"
-          mkdir site
-          cp -r target/doc site/rustdoc
-          cp -r book site/mdbook
+      - name: Download built site
+        uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: site
 
       - name: Publish to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -83,10 +71,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
 
-      - name: List generated files
+      - name: Confirm published contents
         run: |
-          echo "--- site/rustdoc ---"
-          ls -al site/rustdoc || echo "No rustdoc"
-          echo "--- site/mdbook ---"
-          ls -al site/mdbook || echo "No mdbook"
-        
+          echo "--- site contents ---"
+          find site
