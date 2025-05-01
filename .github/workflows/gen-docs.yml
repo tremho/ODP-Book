@@ -56,7 +56,7 @@ jobs:
   
       - name: Create GitHub Release if not exists
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           if ! gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" &>/dev/null; then
             gh release create "$TAG_NAME" --repo "$GITHUB_REPOSITORY" \
@@ -65,7 +65,7 @@ jobs:
 
       - name: Upload zip files to GitHub Release using gh CLI
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ github.token }}
         run: |
          gh release upload "$TAG_NAME" dist/*.zip --clobber --repo "$GITHUB_REPOSITORY"
     
