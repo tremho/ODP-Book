@@ -1,6 +1,10 @@
-## More we can do with the STM32F3 Discovery kit
+## More examples and tutorials
 
-Since we have this microcontroller that we have used to learn Rust and the basics of ODP already at hand, let's use it for
-at least one more experiment before we move on to the address transport signal bindings and pin traits we'll need to deal with for an actual Embedded Controller context.
+Our blinking light example gets things started and proves out the basic toolchain and coding practices.
 
-### TBD
+Now you are ready for real-world examples.
+
+You will find a collection of examples on 
+Shelf 2 of the ODP documentation library.
+
+

@@ -1,5 +1,7 @@
 - [Welcome!](./Welcome.md)
 - [Concepts](./Concepts.md)
+    -[Bookshelves](./concepts/Bookshelves.md)
+    -[Patina](./concepts/Pantina.md)
 - [Tutorials](./Tutorials.md)
     - [Discovery](./tutorial/Discovery.md)
         - [Button](./tutorial/UserButton.md)
