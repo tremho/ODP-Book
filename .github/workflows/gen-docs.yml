@@ -53,8 +53,8 @@ jobs:
             dist/rustdoc.zip
             dist/mdbook.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}   # ← use PAT here
+  
   deploy-pages:
     needs: build-docs
     runs-on: ubuntu-latest
