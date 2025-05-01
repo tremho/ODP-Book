@@ -56,11 +56,27 @@ jobs:
 
       - name: Set up Git identity
         run: |
+          echo "--- setup Git Identity ---"
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
       - name: Download build artifacts
         run: |
+          echo "--- download build artifacts ---"
           mkdir site
           cp -r target/doc site/rustdoc
           cp -r book site/mdbook
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+
+      - name: List generated files
+        run: |
+          echo "--- site/rustdoc ---"
+          ls -al site/rustdoc || echo "No rustdoc"
+          echo "--- site/mdbook ---"
+          ls -al site/mdbook || echo "No mdbook"
+        
