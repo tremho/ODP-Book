@@ -54,6 +54,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Rebuild docs
+        run: |
+          cargo doc --no-deps --release
+          cargo install mdbook
+          mdbook build
+          mkdir -p site
+          cp -r target/doc site/rustdoc
+          cp -r book site/mdbook 
+
       - name: Set up Git identity
         run: |
           echo "--- setup Git Identity ---"
