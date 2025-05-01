@@ -46,28 +46,29 @@ jobs:
           zip -r dist/rustdoc.zip target/doc
           zip -r dist/mdbook.zip book
 
-      - name: Set release tag env var
-        run: echo "TAG_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
-
+          - name: Set release tag env var
+          run: echo "TAG_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+  
       - name: Install GitHub CLI
         run: |
           sudo apt-get update
           sudo apt-get install -y gh
-
+  
       - name: Create GitHub Release if not exists
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
+          gh auth status
           if ! gh release view "$TAG_NAME" &>/dev/null; then
             gh release create "$TAG_NAME" -t "$TAG_NAME" -n "Documentation release for $TAG_NAME"
           fi
+  
+      - name: Upload zip files to GitHub Release using gh CLI
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
-
-      - name: Upload zip files to GitHub Release using gh CLI
         run: |
           gh release upload "$TAG_NAME" dist/*.zip --clobber
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-
+  
   deploy-pages:
     needs: build-docs
     runs-on: ubuntu-latest
