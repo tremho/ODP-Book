@@ -46,8 +46,8 @@ jobs:
           zip -r dist/rustdoc.zip target/doc
           zip -r dist/mdbook.zip book
 
-          - name: Set release tag env var
-          run: echo "TAG_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      - name: Set release tag env var
+        run: echo "TAG_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
   
       - name: Install GitHub CLI
         run: |
