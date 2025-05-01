@@ -70,3 +70,11 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
+
+      - name: List generated files
+        run: |
+          echo "--- site/rustdoc ---"
+          ls -al site/rustdoc || echo "No rustdoc"
+          echo "--- site/mdbook ---"
+          ls -al site/mdbook || echo "No mdbook"
+        
