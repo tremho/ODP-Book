@@ -1,1 +1,1 @@
-searchState.loadedDescShard("introduction_to_odp", 0, "")
+searchState.loadedDescShard("introduction_to_odp", 0, "This is a simple Rust program that prints “Hello, world!…")
